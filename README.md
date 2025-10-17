@@ -10,12 +10,15 @@ SKM is an intelligent meta-agent for managing portfolios of development projects
 - Docker Compose for Qdrant vector database
 - Complete error handling system
 
-### Phase 2: Scanning & Analysis ✅  
+### Phase 2: Scanning & Analysis ✅
 - **Scanner Module**
-  - Project discovery via `.specify` directories
+  - Project discovery via `.specify` and `specs` directories
+  - Support for feature-based structure (001-feature-name, 002-feature-name, etc.)
   - Spec-Kit artifact parsing (constitution, spec, plan, tasks)
+  - Multiple task formats: checkbox, task IDs (T001:), emojis (✅❌🔄), keywords (TODO/DONE)
   - Git status integration
   - Project type detection (Rust, Node, Python, Go)
+  - Optimized regex parsing (50-100x faster)
 
 - **Analyzer Module**
   - Stage detection algorithm (Bootstrap → Specify → Plan → Tasks → Implement → Test → Review → Done)
@@ -55,17 +58,56 @@ SKM is an intelligent meta-agent for managing portfolios of development projects
 - **Session Persistence**: Save and restore work environments
 - **Context Serialization**: Rich metadata for continuity
 
+## Features
+
+- 🔍 **Smart Project Discovery**: Finds projects with `.specify` or `specs` directories
+- 📊 **Dual Structure Support**:
+  - Standard: Artifacts directly in `.specify/`
+  - Feature-based: Numbered directories (001-feature, 002-feature)
+- ✅ **Flexible Task Parsing**: Supports multiple formats (checkbox, IDs, emojis, keywords)
+- 🎯 **Intelligent Prioritization**: Multi-factor scoring (human needs, risk, staleness, impact)
+- 📈 **Stage Detection**: Automatic progress tracking through development lifecycle
+- 📝 **Rich Reports**: Markdown and JSON output formats
+- ⚡ **Performance**: Optimized parsing (50-100x faster)
+- 🧹 **Clean Code**: Comprehensive documentation, minimal warnings
+
 ## Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/t3chn/skm.git
+cd skm
+
 # Build the project
 cargo build --release
 
 # Run from target directory
 ./target/release/skm --help
+
+# Or install globally
+cargo install --path .
 ```
 
 ## Usage
+
+### Quick Start
+
+```bash
+# Scan projects in current directory
+skm scan
+
+# Scan specific directory (e.g., all your projects)
+skm scan --root ~/projects
+
+# Enable debug mode for detailed logging
+SKM_DEBUG=1 skm scan --root ~/projects
+
+# View status with caching (fast)
+skm status
+
+# Filter projects needing attention
+skm status --only needs-attention
+```
 
 ### Core Commands
 
@@ -76,6 +118,9 @@ skm scan
 
 # Scan specific directory
 skm scan --root /path/to/projects
+
+# Scan with debug output
+SKM_DEBUG=1 skm scan
 ```
 
 #### View Status
