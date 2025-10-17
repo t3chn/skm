@@ -1,299 +1,197 @@
-# SKM (Spec-Kit Manager)
+# SKM - Spec-Kit Manager
 
-SKM is an intelligent meta-agent for managing portfolios of development projects following the Spec-Kit methodology. It provides automated discovery, analysis, prioritization, and orchestration of projects.
+> Intelligent portfolio management for development projects following the Spec-Kit methodology
 
-## 🎉 Implementation Status: COMPLETE (40/40 tasks)
+[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-### Phase 1: Foundation ✅
-- Rust project structure with 7 modules
-- All required dependencies configured
-- Docker Compose for Qdrant vector database
-- Complete error handling system
+SKM automatically discovers, analyzes, and prioritizes your development projects, helping you focus on what matters most.
 
-### Phase 2: Scanning & Analysis ✅
-- **Scanner Module**
-  - Project discovery via `.specify` and `specs` directories
-  - Support for feature-based structure (001-feature-name, 002-feature-name, etc.)
-  - Spec-Kit artifact parsing (constitution, spec, plan, tasks)
-  - Multiple task formats: checkbox, task IDs (T001:), emojis (✅❌🔄), keywords (TODO/DONE)
-  - Git status integration
-  - Project type detection (Rust, Node, Python, Go)
-  - Optimized regex parsing (50-100x faster)
+## ✨ Key Features
 
-- **Analyzer Module**
-  - Stage detection algorithm (Bootstrap → Specify → Plan → Tasks → Implement → Test → Review → Done)
-  - Priority scoring with configurable weights
-  - Human requirement detection
-  - Risk assessment
+- 🔍 **Smart Discovery** - Automatically finds all Spec-Kit projects in your workspace
+- 📊 **Dual Structure Support** - Works with both `.specify/` and `specs/` directory layouts
+- ✅ **Flexible Task Tracking** - Parses multiple formats: checkboxes, IDs (T001:), emojis (✅❌), keywords
+- 🎯 **Intelligent Prioritization** - Multi-factor scoring based on urgency, risk, and impact
+- 📈 **Progress Tracking** - Automatic stage detection across project lifecycle
+- ⚡ **High Performance** - Optimized parsing (50-100x faster than naive approaches)
+- 📝 **Rich Reporting** - Generate Markdown and JSON reports
+- 🔄 **Smart Caching** - Fast status updates with intelligent cache invalidation
 
-- **Meta Module**
-  - Global configuration management
-  - Project metadata storage
-  - Status caching for performance
+## 🚀 Quick Start
 
-### Phase 3: Reporting & Status ✅
-- **Scan Command**: Discovers and analyzes all projects
-- **Portfolio Aggregation**: Creates comprehensive status overview
-- **Priority Calculation**: Uses formula `w1*NeedsHuman + w2*Risk + w3*Staleness + w4*Impact - w5*Confidence`
-- **Markdown Reports**: Generates STATUS.md with project details
-- **CLI Display**: Shows scan results with priorities
-
-### Phase 4: RAG Integration ✅
-- **Vector Database**: Qdrant integration for semantic search
-- **Document Embedding**: Simplified hash-based embeddings
-- **Search Interface**: Query across all project artifacts
-- **Q&A System**: Natural language understanding of portfolio
-- **Insights Engine**: Cross-project pattern detection
-
-### Phase 5: Automation Engine ✅
-- **L0-L3 Levels**: Progressive automation with safety controls
-- **Command Classification**: Risk assessment for operations
-- **Approval Workflow**: Human-in-the-loop for critical actions
-- **Execution Engine**: Safe command execution with dry-run
-- **Audit Logging**: Complete history of automated actions
-
-### Phase 6: Session Management ✅
-- **tmux Integration**: Project-specific development sessions
-- **Handoff Protocol**: Context transfer between agents
-- **Session Persistence**: Save and restore work environments
-- **Context Serialization**: Rich metadata for continuity
-
-## Features
-
-- 🔍 **Smart Project Discovery**: Finds projects with `.specify` or `specs` directories
-- 📊 **Dual Structure Support**:
-  - Standard: Artifacts directly in `.specify/`
-  - Feature-based: Numbered directories (001-feature, 002-feature)
-- ✅ **Flexible Task Parsing**: Supports multiple formats (checkbox, IDs, emojis, keywords)
-- 🎯 **Intelligent Prioritization**: Multi-factor scoring (human needs, risk, staleness, impact)
-- 📈 **Stage Detection**: Automatic progress tracking through development lifecycle
-- 📝 **Rich Reports**: Markdown and JSON output formats
-- ⚡ **Performance**: Optimized parsing (50-100x faster)
-- 🧹 **Clean Code**: Comprehensive documentation, minimal warnings
-
-## Installation
+### Installation
 
 ```bash
-# Clone the repository
+# Clone and build
 git clone https://github.com/t3chn/skm.git
 cd skm
-
-# Build the project
 cargo build --release
 
-# Run from target directory
-./target/release/skm --help
-
-# Or install globally
+# Optional: Install globally
 cargo install --path .
 ```
 
-## Usage
-
-### Quick Start
+### Basic Usage
 
 ```bash
-# Scan projects in current directory
-skm scan
-
-# Scan specific directory (e.g., all your projects)
+# Scan your projects
 skm scan --root ~/projects
 
-# Enable debug mode for detailed logging
-SKM_DEBUG=1 skm scan --root ~/projects
-
-# View status with caching (fast)
+# View portfolio status
 skm status
 
-# Filter projects needing attention
+# Filter high-priority projects
 skm status --only needs-attention
-```
 
-### Core Commands
-
-#### Scan for Projects
-```bash
-# Scan current directory
-skm scan
-
-# Scan specific directory
-skm scan --root /path/to/projects
-
-# Scan with debug output
+# Enable detailed logging
 SKM_DEBUG=1 skm scan
 ```
 
-#### View Status
+### Example Output
+
+```
+Found: crypto-trader [Implement] Priority: 61.6
+Found: web-dashboard [Review] Priority: 45.3
+Found: api-service [Test] Priority: 38.9
+
+=== Scan Complete ===
+Projects found: 15
+Need attention: 12
+Tasks: 510/852 completed (59.9%)
+Average priority: 55.3
+Scan time: 1670ms
+```
+
+## 📖 How It Works
+
+### Project Discovery
+
+SKM scans your workspace for Spec-Kit projects and supports two structures:
+
+**Standard Layout:**
+```
+my-project/
+├── .specify/
+│   ├── constitution.md
+│   ├── spec.md
+│   ├── plan.md
+│   └── tasks.md
+```
+
+**Feature-Based Layout:**
+```
+my-project/
+├── specs/
+│   ├── 001-user-authentication/
+│   │   ├── spec.md
+│   │   ├── plan.md
+│   │   └── tasks.md
+│   ├── 002-payment-processing/
+│   │   └── ...
+```
+
+### Task Format Support
+
+SKM understands multiple task formats:
+
+```markdown
+- [ ] Standard checkbox
+- [x] Completed checkbox
+- [ ] T001: Task with ID
+T002: Standalone task ID
+✅ Emoji completed
+❌ Emoji incomplete
+🔄 In progress
+TODO: Keyword format
+DONE: Completed keyword
+```
+
+Special markers:
+- `[P]` or `||` - Parallel execution
+- `[BLOCKED]` or 🚫 - Blocked task
+
+### Priority Calculation
+
+Priority score uses weighted formula:
+
+```
+Score = w₁×NeedsHuman + w₂×Risk + w₃×Staleness + w₄×Impact - w₅×Confidence
+```
+
+Default weights:
+- Human attention needed: 40%
+- Risk level: 25%
+- Time since update: 15%
+- Project impact: 15%
+- Confidence: -10%
+
+## 🎯 Commands
+
+### Core Commands
+
+#### `scan` - Discover and analyze projects
+
 ```bash
-# Display portfolio status
-skm status
-
-# JSON output for automation
-skm status --json
-
-# Filter by attention needed
-skm status --only needs-attention
+skm scan                           # Scan current directory
+skm scan --root /path/to/projects  # Scan specific location
 ```
 
-#### Generate Reports
+Generates:
+- `.skm/STATUS.md` - Markdown report
+- `.skm/status.json` - Cached data
+
+#### `status` - View portfolio overview
+
 ```bash
-# Markdown report
-skm report --format md
-
-# JSON report
-skm report --format json --out status.json
-
-# Table format for terminals
-skm report --format table
+skm status                         # Show all projects
+skm status --json                  # JSON output
+skm status --only needs-attention  # Filter high-priority
+skm status --only incomplete       # Filter active tasks
+skm status --only stage:implement  # Filter by stage
 ```
 
-#### Create Digests
+#### `report` - Generate formatted reports
+
 ```bash
-# Weekly digest
-skm digest weekly
-
-# Project-specific digest
-skm digest summary --project my-app
-
-# Executive summary
-skm digest executive --out EXEC.md
+skm report --format md             # Markdown (default)
+skm report --format json           # JSON export
+skm report --format table          # Terminal table
+skm report --out custom.md         # Custom output path
 ```
 
-### RAG & Search Commands
+## ⚙️ Configuration
 
-#### Index Projects
-```bash
-# Index all projects for search
-skm index
-
-# Re-index specific project
-skm index --project my-app --force
-```
-
-#### Search & Query
-```bash
-# Semantic search across projects
-skm search "authentication flow"
-
-# Ask questions about portfolio
-skm ask "What projects need code review?"
-
-# Get insights
-skm insights patterns
-skm insights blockers
-skm insights velocity
-```
-
-### Automation Commands
-
-#### Execute with Safety Levels
-```bash
-# L0: Read-only operations
-skm execute "git status" --level L0
-
-# L1: Low-risk operations
-skm execute "npm install" --level L1
-
-# L2: Medium-risk (requires approval)
-skm execute "git commit -m 'fix'" --level L2
-
-# L3: High-risk (manual only)
-skm execute "rm -rf node_modules" --level L3
-
-# Dry-run mode
-skm execute "deploy prod" --dry-run
-```
-
-#### Watch Mode
-```bash
-# Monitor for changes
-skm watch
-
-# Watch with auto-actions
-skm watch --auto-index --auto-report
-```
-
-### Session Management
-
-#### tmux Sessions
-```bash
-# Create project session
-skm open my-project
-
-# List active sessions
-skm sessions list
-
-# Attach to existing session
-skm sessions attach my-project
-
-# Save session state
-skm sessions save my-project
-```
-
-#### Agent Handoff
-```bash
-# Create handoff context
-skm handoff prepare --project my-app
-
-# Generate handoff file
-skm handoff export --out context.json
-
-# Import handoff context
-skm handoff import context.json
-```
-
-## Project Structure
-
-```
-skm/
-├── src/
-│   ├── main.rs           # CLI entry point
-│   ├── lib.rs            # Core data structures
-│   ├── scanner/          # Project discovery
-│   │   ├── finder.rs     # Directory traversal
-│   │   ├── parser.rs     # Artifact parsing
-│   │   └── git.rs        # Git integration
-│   ├── analyzer/         # Project analysis
-│   │   ├── stage.rs      # Stage detection
-│   │   └── priority.rs   # Priority scoring
-│   ├── reporter/         # Report generation
-│   │   └── markdown.rs   # Markdown reports
-│   ├── meta/            # Configuration & state
-│   │   ├── config.rs    # Global settings
-│   │   └── state.rs     # Project metadata
-│   └── ...              # Other modules (RAG, session, autopilot)
-├── docker-compose.yml    # Qdrant setup
-└── Cargo.toml           # Dependencies
-```
-
-## Configuration
-
-SKM looks for configuration in `~/.config/skm/config.toml`:
+SKM looks for configuration at `~/.config/skm/config.toml`:
 
 ```toml
+# Priority calculation weights
 [weights]
-needs_human = 40.0
-risk = 25.0  
-staleness = 15.0
-impact = 15.0
-confidence = 10.0
+needs_human = 40.0    # Human attention required
+risk = 25.0           # Risk assessment
+staleness = 15.0      # Days since update
+impact = 15.0         # Project importance
+confidence = 10.0     # Solution certainty
 
-attention_threshold = 50.0
-default_editor = "nvim"
+# General settings
+attention_threshold = 50.0  # Priority threshold for "needs attention"
+scan_depth = 5              # Maximum directory depth
+default_editor = "nvim"     # Editor for manual edits
+
+# External services (future)
 qdrant_url = "http://localhost:6333"
 automation_level = "L1"
-scan_depth = 5
 ```
 
-## Project Metadata
+### Project-Specific Metadata
 
-Each project can have metadata stored in `.skm/meta.json`:
+Store per-project settings in `.skm/meta.json`:
 
 ```json
 {
   "projects": {
-    "my-project": {
-      "impact": 3,
+    "critical-service": {
+      "impact": 3,              # 1-3 scale
       "approved_by_human": true,
       "automation_level": "L2"
     }
@@ -301,23 +199,29 @@ Each project can have metadata stored in `.skm/meta.json`:
 }
 ```
 
-## Status Output
+## 🏗️ Architecture
 
-The scan command generates:
-- `.skm/STATUS.md` - Markdown report with all project details
-- `.skm/status.json` - Cached status for performance
+```
+skm/
+├── src/
+│   ├── scanner/       # Project discovery & parsing
+│   ├── analyzer/      # Stage detection & prioritization
+│   ├── reporter/      # Report generation
+│   ├── meta/          # Configuration & state management
+│   ├── rag/           # Vector search (future)
+│   ├── autopilot/     # Automation engine (future)
+│   └── session/       # Session management (future)
+```
 
-## Self-Management
+### Stage Lifecycle
 
-SKM can manage itself! The project includes its own `.specify/` directory with:
-- `constitution.md` - Core values and principles
-- `spec.md` - User stories and requirements
-- `plan.md` - Architecture and implementation phases
-- `tasks.md` - Complete task breakdown (40 tasks, 100% complete)
+```
+Bootstrap → Specify → Plan → Tasks → Implement → Test → Review → Done
+```
 
-Run `skm scan` in the SKM directory to see it manage itself.
+Each stage has specific requirements and next actions.
 
-## Development
+## 🛠️ Development
 
 ```bash
 # Run tests
@@ -329,10 +233,45 @@ RUST_LOG=debug cargo run -- scan
 # Format code
 cargo fmt
 
-# Check linting
+# Lint
 cargo clippy
+
+# Build release
+cargo build --release
 ```
 
-## License
+## 📊 Performance
 
-MIT
+- **Scan Speed**: ~1-2s for 15 projects
+- **Task Parsing**: 50-100x faster with optimized regex
+- **Memory**: Minimal overhead, efficient caching
+- **Disk Usage**: Status cache < 100KB
+
+## 🗺️ Roadmap
+
+- [x] Core scanning and prioritization
+- [x] Multiple task format support
+- [x] Feature-based directory support
+- [x] Status caching
+- [ ] RAG-based semantic search
+- [ ] Automation engine with safety levels
+- [ ] tmux session management
+- [ ] GitHub integration
+- [ ] Interactive TUI mode
+- [ ] Watch mode for continuous monitoring
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+Built for the [Spec-Kit](https://github.com/spec-kit/spec-kit) methodology by [@klueless-io](https://github.com/klueless-io)
+
+---
+
+**Made with ❤️ using Rust and [Claude Code](https://claude.com/claude-code)**
