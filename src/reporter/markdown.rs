@@ -8,7 +8,7 @@ pub fn generate_markdown_report(status: &PortfolioStatus) -> String {
     let mut report = String::new();
     
     // Header
-    report.push_str(&format!("# SKM Portfolio Status Report\n\n"));
+    report.push_str("# SKM Portfolio Status Report\n\n");
     report.push_str(&format!("Generated: {}\n\n", status.generated_at.format("%Y-%m-%d %H:%M:%S UTC")));
     
     // Summary
@@ -45,8 +45,8 @@ pub fn generate_markdown_report(status: &PortfolioStatus) -> String {
         let count = status.summary.by_stage.get(stage).unwrap_or(&0);
         report.push_str(&format!("| {:?} | {} |\n", stage, count));
     }
-    report.push_str("\n");
-    
+    report.push('\n');
+
     // Priority Projects (top 10)
     report.push_str("## High Priority Projects\n\n");
     let mut sorted_projects = status.projects.clone();
@@ -58,7 +58,7 @@ pub fn generate_markdown_report(status: &PortfolioStatus) -> String {
         report.push_str("| Priority | Project | Stage | Next Action | Human Needed |\n");
         report.push_str("|----------|---------|-------|-------------|---------------|\n");
         
-        for (idx, project) in sorted_projects.iter().take(10).enumerate() {
+        for project in sorted_projects.iter().take(10) {
             let human_str = if project.requires_human.is_empty() {
                 "No".to_string()
             } else {
@@ -85,7 +85,7 @@ pub fn generate_markdown_report(status: &PortfolioStatus) -> String {
                 human_str
             ));
         }
-        report.push_str("\n");
+        report.push('\n');
     }
     
     // All Projects Details
@@ -121,8 +121,8 @@ pub fn generate_markdown_report(status: &PortfolioStatus) -> String {
         if project.tasks.blocked > 0 {
             report.push_str(&format!(" ({} blocked)", project.tasks.blocked));
         }
-        report.push_str("\n");
-        
+        report.push('\n');
+
         report.push_str(&format!("- **Next Action**: {}\n", project.next.description));
         report.push_str(&format!("  - Command: `{}`\n", project.next.command));
         report.push_str(&format!("  - Automated: {}\n", 
@@ -134,17 +134,17 @@ pub fn generate_markdown_report(status: &PortfolioStatus) -> String {
                 format_requirements(&project.requires_human)
             ));
         }
-        
-        report.push_str("\n");
+
+        report.push('\n');
     }
-    
+
     // Errors
     if !status.scan_stats.errors.is_empty() {
         report.push_str("## Errors Encountered\n\n");
         for error in &status.scan_stats.errors {
             report.push_str(&format!("- {}\n", error));
         }
-        report.push_str("\n");
+        report.push('\n');
     }
     
     // Footer

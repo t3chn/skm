@@ -37,19 +37,18 @@ impl ProjectScanner {
             .into_iter()
             .filter_map(|e| e.ok())
         {
-            if self.is_specify_dir(&entry) {
-                if let Some(project_path) = entry.path().parent() {
-                    // Skip if this is inside another project's .specify directory
-                    // (e.g., skip /project/.specify/specs if we already have /project)
-                    let path_str = project_path.to_string_lossy();
-                    if path_str.contains("/.specify/") {
-                        continue;
-                    }
-                    
-                    // Only add if we haven't seen this project yet
-                    if seen_projects.insert(project_path.to_path_buf()) {
-                        projects.push(project_path.to_path_buf());
-                    }
+            if self.is_specify_dir(&entry)
+                && let Some(project_path) = entry.path().parent() {
+                // Skip if this is inside another project's .specify directory
+                // (e.g., skip /project/.specify/specs if we already have /project)
+                let path_str = project_path.to_string_lossy();
+                if path_str.contains("/.specify/") {
+                    continue;
+                }
+
+                // Only add if we haven't seen this project yet
+                if seen_projects.insert(project_path.to_path_buf()) {
+                    projects.push(project_path.to_path_buf());
                 }
             }
         }
@@ -110,12 +109,9 @@ pub fn detect_project_type(path: &Path) -> ProjectType {
 /// Check if a directory should be ignored (e.g., node_modules, target)
 pub fn should_ignore(path: &Path) -> bool {
     let ignore_dirs = ["node_modules", "target", ".git", "dist", "build", "__pycache__"];
-    
-    if let Some(file_name) = path.file_name() {
-        if let Some(name) = file_name.to_str() {
-            return ignore_dirs.contains(&name);
-        }
-    }
-    
-    false
+
+    path.file_name()
+        .and_then(|f| f.to_str())
+        .map(|name| ignore_dirs.contains(&name))
+        .unwrap_or(false)
 }

@@ -374,7 +374,7 @@ async fn process_project(
     let last_updated = artifacts.spec
         .as_ref()
         .map(|f| f.modified)
-        .unwrap_or_else(|| Utc::now());
+        .unwrap_or_else(Utc::now);
     
     let priority_score = calculator.calculate(
         &human_reqs,

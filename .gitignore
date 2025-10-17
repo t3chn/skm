@@ -17,6 +17,8 @@ Thumbs.db
 .skm/
 qdrant_storage/
 *.log
+*.o
+spec-kit/
 
 # Environment
 .env

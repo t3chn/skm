@@ -82,7 +82,7 @@ pub fn get_next_action(stage: &Stage) -> NextAction {
     }
 }
 
-fn has_implementation_artifacts(artifacts: &ArtifactStatus, project_type: &ProjectType) -> bool {
+fn has_implementation_artifacts(_artifacts: &ArtifactStatus, project_type: &ProjectType) -> bool {
     // For now, we'll use a simple heuristic
     // In reality, this would check for actual source files
     match project_type {

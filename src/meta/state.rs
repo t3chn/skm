@@ -11,13 +11,19 @@ pub struct ProjectMetaStore {
     pub projects: HashMap<String, ProjectMeta>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct ProjectMeta {
+    #[serde(default)]
     pub impact: Option<u8>,
+    #[serde(default)]
     pub approved_by_human: bool,
+    #[serde(default)]
     pub custom_commands: HashMap<String, String>,
+    #[serde(default)]
     pub agent_command: Option<String>,
+    #[serde(default)]
     pub automation_level: Option<AutomationLevel>,
+    #[serde(default)]
     pub auto_approve: Vec<String>,
 }
 
@@ -26,19 +32,6 @@ impl Default for ProjectMetaStore {
         Self {
             version: "1.0.0".to_string(),
             projects: HashMap::new(),
-        }
-    }
-}
-
-impl Default for ProjectMeta {
-    fn default() -> Self {
-        Self {
-            impact: None,
-            approved_by_human: false,
-            custom_commands: HashMap::new(),
-            agent_command: None,
-            automation_level: None,
-            auto_approve: Vec::new(),
         }
     }
 }
@@ -77,7 +70,7 @@ impl ProjectMetaStore {
     /// Get mutable metadata for a specific project
     pub fn get_project_mut(&mut self, project_id: &str) -> &mut ProjectMeta {
         self.projects.entry(project_id.to_string())
-            .or_insert_with(ProjectMeta::default)
+            .or_default()
     }
     
     /// Set a value for a project

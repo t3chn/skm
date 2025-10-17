@@ -133,15 +133,13 @@ fn has_recent_errors_in_repo(repo: &Repository) -> bool {
             if i >= 5 {
                 break;
             }
-            
-            if let Ok(oid) = oid {
-                if let Ok(commit) = repo.find_commit(oid) {
-                    if let Some(message) = commit.message() {
-                        for marker in &error_markers {
-                            if message.contains(marker) {
-                                return true;
-                            }
-                        }
+
+            if let Ok(oid) = oid
+                && let Ok(commit) = repo.find_commit(oid)
+                && let Some(message) = commit.message() {
+                for marker in &error_markers {
+                    if message.contains(marker) {
+                        return true;
                     }
                 }
             }

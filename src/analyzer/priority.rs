@@ -57,7 +57,7 @@ impl PriorityCalculator {
 
 /// Calculate risk level (0-3) based on various factors
 pub fn calculate_risk(
-    stage: &Stage,
+    _stage: &Stage,
     git_status: &GitStatus,
     tasks: &TaskSummary,
     has_errors: bool,
@@ -98,9 +98,9 @@ fn calculate_staleness(last_updated: DateTime<Utc>) -> f64 {
     let now = Utc::now();
     let duration = now.signed_duration_since(last_updated);
     let days = duration.num_days() as f64;
-    
+
     // Normalize to 0-1 range, max at 7 days
-    (days / 7.0).min(1.0).max(0.0)
+    (days / 7.0).clamp(0.0, 1.0)
 }
 
 /// Normalize impact (1-3) to 0-1 range
